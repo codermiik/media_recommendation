@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <title>FAVORITE</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container1">
+    <header>
+      <nav>
+        <div class="logo">
+          <a href="http://localhost/feel/home.html"><img src="logo.svg" alt="Feel Logo"></a>
+        </div>
+        <div class="menu">
+          <ul>
+            <li><a href="http://localhost/feel/fav.html">Favorite</a></li>
+            <li><a href="http://localhost/feel/tobewatched.html">To be watched</a></li>
+            <li><a href="http://localhost/feel/watched.html">Watched</a></li>
+          </ul>
+        </div>
+      </nav>
+    </header>          
+  </div>
+  <div class="container container4" >
+    <h1>Media marked as favorite</h1>
+    <table id="moviesTable">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Platform</th>
+          <th>Rating</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <button id="add-favorite-btn" type="button" class="btn btn-success btn-lg mt-5 mb-3 add-favorite-btn">Add to favorites</button>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+      $(document).ready(function() {
+      // Send an AJAX request to retrieve the favorite movies
+      $.ajax({
+        url: 'fav.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          // Loop through the retrieved movies and append them to the table
+          for (var i = 0; i < data.length; i++) {
+            var row = '<tr>' +
+                      '<td>' + data[i].title + '</td>' +
+                      '<td>' + data[i].description + '</td>' +
+                      '<td>' + data[i].platform + '</td>' +
+                      '<td>' + data[i].rating + '</td>' +
+                      '<td><button type="button" class="remove-btn btn btn-danger btn-sm" data-id="' + data[i].title + '">Remove</button></td>' +
+                      '</tr>';
+            $('#moviesTable tbody').append(row);
+          }
+          
+          // Add event listener to the remove buttons
+          $('.remove-btn').click(function() {
+            console.log('remove button clicked')
+            var id = $(this).data('id');
+            console.log($(this).data('id'))
+            // Assign $(this) to a variable
+            var btn = $(this);
+            $.ajax({
+              url: 'removefav.php',
+              type: 'POST',
+              data: {id: id},
+              success: function() {
+                // Remove the row from the table
+                btn.closest('tr').remove();
+                console.log("Success!");
+              },
+              error: function() {
+                alert('Failed to remove movie from favorites');
+              }
+            });
+          });
+        },
+        error: function() {
+          // Display an error message if the retrieval fails
+          alert('Failed to retrieve favorite movies');
+        }
+      });
+    });
+</script>
+</body>
+</html>
